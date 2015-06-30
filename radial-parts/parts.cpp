@@ -1,7 +1,14 @@
 #include <iostream>
+#include "include/stdfunc.h"
+
+//Function is then defined here
+void sayhello()
+{
+    std::cout<< "Hello World!";
+}
 
 int main()
 {
-    std::cout << "Hello world!" << endl;
+    sayhello();
     return 0;
 }
