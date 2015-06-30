@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include <iostream>
 #include <cstdlib>
 #include "include/stdfunc.h"
@@ -25,4 +26,16 @@ int mainmenu()
         //close any open files here?
         return exit;
     }
+=======
+#include <stdfunc.h>
+
+//Program entry point
+int main()
+{
+
+    while(handleinput() != "exit")
+        printl("Processed!");
+
+    return 0;
+>>>>>>> 7222764d059767368b19f1b38f9cff4b5fca237d
 }
