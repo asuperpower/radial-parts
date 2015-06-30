@@ -21,3 +21,4 @@ WIP
 No.		QTY.	Part No.	Price/ea	Type		Size
 1		10		1N5819					Shottkey	Axial Leaded
 2										Zener
+------------------------------------------------------------------------
