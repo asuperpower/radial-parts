@@ -20,8 +20,6 @@
 #include <string>
 
 void            printl(std::string str);
-
 std::string     handle_input();
-
 
 #endif

@@ -19,7 +19,7 @@
  * Function:  printl
  * --------------------
  *
- *  A neater way of calling std::cout <<
+ *  Print one line of text with a carriage return.
  */
 void printl(std::string str)
 {
@@ -30,7 +30,7 @@ void printl(std::string str)
  * Function:  handle_input
  * --------------------
  *
- *  Handle one line of input from the console
+ *  Handle one line of input from the console.
  */
 std::string handle_input()
 {

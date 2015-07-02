@@ -15,12 +15,29 @@
 #include <cstdlib>
 #include <stdfunc.h>
 
+bool running = true;
+
+std::string commands[] = {"help", "exit"};
+
+//Select what we want to do
+void select(std::string input)
+{
+    if(input == "exit")
+    {
+        running = false;
+    }
+    else
+    {
+        printl("Unknown Command!");
+    }
+}
 
 int main()
 {
     //Main loop
-    while(handle_input() != "exit")
-        printl(handle_input());
+    printl("Welcome to the parts picker!!");
+    while(running)
+        select(handle_input());
 
     return 0;
 }
