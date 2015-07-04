@@ -17,9 +17,16 @@
 #define STDFUNC_H
 
 #include <iostream>
+#include <cstdlib>
+#include <fstream>
 #include <string>
 
-void            printl(std::string str);
+#define OK      0
+#define WARN    1
+#define ERR     2
+
+void            printl(std::string str, int status);
+
 std::string     handle_input();
 
 #endif

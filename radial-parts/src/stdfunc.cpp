@@ -21,8 +21,23 @@
  *
  *  Print one line of text with a carriage return.
  */
-void printl(std::string str)
+void printl(std::string str, int status)
 {
+    //Temporary status string
+    std::string stat;
+    if(status == OK)
+    {
+        std::cout << "[OK] ";
+    }
+    else if(status == WARN)
+    {
+        std::cout << "[WARN] ";
+    }
+    else if(status == ERR)
+    {
+        std::cout << "[ERR] ";
+    }
+
     std::cout << str << std::endl;
 }
 

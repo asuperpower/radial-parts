@@ -33,8 +33,10 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Unit filename="include/baseio.h" />
 		<Unit filename="include/stdfunc.h" />
 		<Unit filename="parts.cpp" />
+		<Unit filename="src/baseio.cpp" />
 		<Unit filename="src/stdfunc.cpp" />
 		<Extensions>
 			<code_completion />
