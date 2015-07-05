@@ -1,0 +1,17 @@
+# depslib dependency file v1.0
+1436001755 source:c:\users\admin\documents\github\radial-parts\radial-parts\parts.cpp
+	<stdfunc.h>
+	<baseio.h>
+
+1436001673 c:\users\admin\documents\github\radial-parts\radial-parts\include\stdfunc.h
+	<iostream>
+	<cstdlib>
+	<fstream>
+	<string>
+
+1436000962 c:\users\admin\documents\github\radial-parts\radial-parts\include\baseio.h
+
+1436001234 source:c:\users\admin\documents\github\radial-parts\radial-parts\src\baseio.cpp
+	<stdfunc.h>
+	<baseio.h>
+
