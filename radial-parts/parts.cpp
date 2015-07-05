@@ -17,18 +17,26 @@
 bool running = true;
 
 std::string commands[] = {"help", "exit"};
-std::fstream parts("parts.csv");
+std::fstream parts;
 
 //Select what we want to do
 void select(std::string input)
 {
+    std::cout << input;
     if(input == "exit")
     {
         running = false;
+        return;
+    }
+    if(input == "add part")
+    {
+        printl("Here!!", OK);
+        return;
     }
     else
     {
         printl("Unknown Command!", ERR);
+        return;
     }
 }
 
@@ -41,19 +49,18 @@ int main()
     if(!parts.good())
     {
         printl("Parts file does not exist! Generating now...", WARN);
-        parts.open("parts.csv", std::ios::out);
+        parts.open("parts.csv", std::ios::out | std::ios::app);
+        parts << "resistor,0";
         //Write some stuff here!
         parts.close();
         printl("Done!", OK);
     }
-
 
     while(running)
     {
         std::cout << "Command>";
         select(handle_input());
     }
-
 
     return 0;
 }

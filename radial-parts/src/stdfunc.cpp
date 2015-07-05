@@ -50,6 +50,6 @@ void printl(std::string str, int status)
 std::string handle_input()
 {
     std::string ret;
-    std::cin >> ret;
+    std::getline(std::cin, ret);
     return ret;
 }
