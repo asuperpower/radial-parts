@@ -16,21 +16,29 @@
 
 bool running = true;
 
-std::string commands[] = {"help", "exit"};
 std::fstream parts;
 
 //Select what we want to do
 void select(std::string input)
 {
-    std::cout << input;
-    if(input == "exit")
+    //Crude way of splitting strings
+    std::string::size_type pos = input.find_first_of(','); //Find positions where a ',' is located
+    std::string command = input.substr(0, pos); //Command data
+
+    if(command == "exit")
     {
         running = false;
-        return;
+        return; //Return so we don't get any stray unknown commands. Basically break us out at this point!
     }
-    if(input == "add part")
+    if(command == "add part")
     {
-        printl("Here!!", OK);
+        std::string data = input.substr(pos + 1, input.length());
+
+        //Write the data to the csv file
+        parts.open("parts.csv", std::ios::out | std::ios::app);
+        parts << data << ",0" << std::endl;
+        parts.close();
+        printl("Done adding part!", OK);
         return;
     }
     else
@@ -50,8 +58,7 @@ int main()
     {
         printl("Parts file does not exist! Generating now...", WARN);
         parts.open("parts.csv", std::ios::out | std::ios::app);
-        parts << "resistor,0";
-        //Write some stuff here!
+
         parts.close();
         printl("Done!", OK);
     }
@@ -64,4 +71,3 @@ int main()
 
     return 0;
 }
-
