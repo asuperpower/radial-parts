@@ -35,3 +35,23 @@
 	<stdfunc.h>
 	<baseio.h>
 
+1436265170 source:f:\c++ projects\radial-parts\radial-parts\src\baseio.cpp
+	<stdfunc.h>
+	<baseio.h>
+
+1436265170 f:\c++ projects\radial-parts\radial-parts\include\stdfunc.h
+	<iostream>
+	<cstdlib>
+	<cstring>
+	<fstream>
+	<string>
+
+1436265170 f:\c++ projects\radial-parts\radial-parts\include\baseio.h
+
+1436265170 source:f:\c++ projects\radial-parts\radial-parts\src\stdfunc.cpp
+	<stdfunc.h>
+
+1436271630 source:f:\c++ projects\radial-parts\radial-parts\parts.cpp
+	<stdfunc.h>
+	<baseio.h>
+
