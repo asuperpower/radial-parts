@@ -55,9 +55,9 @@ void commandhandler(std::string command)
     const std::string help = "help";//looks for this match in a command - ie: if help is typed then help is given
     bool match = false;
     //looks for match in help and if the first four characters of the command input by the user is "help", then match is true and the if statement is executed.
-    for(unsigned int i = 0; i < strlen(help); i++)
+    for(unsigned int i = 1; i < help.length(); i++)
     {
-        if help[i] = command[i]
+        if (help[i] == command[i])
         {
             match = true;
         }
@@ -101,23 +101,23 @@ void commandhandler(std::string command)
         }
         if (command[6] == 't')
         {
-            printl("\tTolerance of the component, as a percentage.\n\tExample:\n\t\tadd resistor -v 20k -t 1%");
+            printl("\tTolerance of the component, as a percentage.\n\tExample:\n\t\tadd resistor -v 20k -t 1%", OK);
             return;
         }
         if (command[6] == 's')
         {
-            printl("\tSorts by a flag, or sorts by \n\tUsage:\tfor command 'view'\n\tDefault:\tAlphabetically sorted.");//needs to be smart enough to sort 20k to be more than 2M
+            printl("\tSorts by a flag, or sorts by \n\tUsage:\tfor command 'view'\n\tDefault:\tAlphabetically sorted.", OK);//needs to be smart enough to sort 20k to be more than 2M
             return;
         }
         if (command[6] == 'n')
         {
-            printl("\tCreates a new flag. The tutorial associated with the creation guides you through the process.");
+            printl("\tCreates a new flag. The tutorial associated with the creation guides you through the process.", OK);
             return;
         }
     }
     else
     {
-        printl("Unknown Command!",ERR)
+        printl("Unknown Command!", ERR);
         return;
     }
 
