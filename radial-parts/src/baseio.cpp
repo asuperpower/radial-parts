@@ -7,6 +7,7 @@
 
   Rev History:
   4/7/2015: Intial Revision
+  7/7/2015: Added file_exists function
 
 ----------------------------------------------------------------------
   Copyright 2015-2016 Radial Technologies, Pty Ltd
@@ -27,5 +28,28 @@ void write_line(const char* fname, std::string text)
     file.open(fname, std::ios::out | std::ios_base::app);
     file << text << std::endl;
     file.close();
+}
+
+/*
+ * Function:  file_exists
+ * --------------------
+ *
+ *  Test whether the file exists
+ */
+bool file_exists(const char* fname)
+{
+    std::fstream*   temp = new std::fstream(); //Temporary file pointer
+    bool            exists = false;
+
+    temp->open(fname); //Open the file
+
+    if(temp->good())
+        exists = true;
+
+    //Delete the temporary file (there are no memory leaks in this dojo!)
+    delete temp;
+
+    return exists;
+
 }
 

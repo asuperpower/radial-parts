@@ -22,12 +22,24 @@
 #include <fstream>
 #include <string>
 
+//Check if we are running on windows and include windows.h
+#ifdef _WIN32
+    #include <windows.h>
+    void setcol(int colour);
+#endif
+
+
 #define OK      0
 #define WARN    1
 #define ERR     2
 
-void            printl(std::string str, int status);
+#define OK_COL      0x0A
+#define WARN_COL    0x0E
+#define ERR_COL     0x0C
 
+void            printl(std::string str, int status);
 std::string     handle_input();
+
+
 
 #endif

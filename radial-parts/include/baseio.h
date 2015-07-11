@@ -16,5 +16,6 @@
 #define BASEIO_H
 
 void    write_line(const char* fname, std::string text);
+bool    file_exists(const char* fname);
 
 #endif // BASEIO_H
