@@ -61,6 +61,36 @@ std::string handle_input()
 }
 
 /*
+ * Function:  split
+ * --------------------
+ *
+ *  Split a string according to a token
+ *  Taken from: http://www.cplusplus.com/articles/2wA0RXSz/
+ */
+std::vector<std::string> split(const std::string& input, const char& delim)
+{
+    std::string buff{""};
+    std::vector<std::string>s;
+
+    for(auto i:input)
+    {
+        if(i != delim)
+            buff+=i;
+        else
+            if(i == delim && buff != "")
+        {
+            s.push_back(buff);
+            buff = "";
+        }
+    }
+
+    if(buff != "")
+        s.push_back(buff);
+
+    return s;
+}
+
+/*
  * Function:  setcol
  * --------------------
  *

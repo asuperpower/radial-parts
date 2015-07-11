@@ -21,6 +21,7 @@
 #include <cstring>
 #include <fstream>
 #include <string>
+#include <vector>
 
 //Check if we are running on windows and include windows.h
 #ifdef _WIN32
@@ -37,8 +38,9 @@
 #define WARN_COL    0x0E
 #define ERR_COL     0x0C
 
-void            printl(std::string str, int status);
-std::string     handle_input();
+void                        printl(std::string str, int status);
+std::string                 handle_input();
+std::vector<std::string>    split(const std::string& input, const char& delim);
 
 
 
