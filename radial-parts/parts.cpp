@@ -25,8 +25,6 @@ void select(std::string input)
     std::string::size_type pos = input.find_first_of(','); //Find positions where a ',' is located
     std::string command = input.substr(0, pos); //Command data
 
-
-
     if(command == "exit")
     {
         running = false;
@@ -52,84 +50,37 @@ void select(std::string input)
 
 void commandhandler(std::string command)
 {
-    const std::string help = "help";//looks for this match in a command - ie: if help is typed then help is given
     bool match = false;
-    //looks for match in help and if the first four characters of the command input by the user is "help", then match is true and the if statement is executed.
-    for(unsigned int i = 1; i < help.length(); i++)
+    std::string commands[] = {"help", "exit"};
+
+    //Get position of each space in the entire string of input
+    std::string::size_type pos = command.find_first_of(' '); //Find positions where a ',' is located
+
+    //Extract the command part of the data
+    std::string comm = command.substr(0, pos);
+
+    //Check for valid commands
+    for(unsigned int i = 0; i < sizeof(commands) / sizeof(*commands); i++) //Divide the sizeof the array (in characters) by the size of a character pointer
     {
-        if (help[i] == command[i])
+        if(comm == commands[i])
         {
             match = true;
-        }
-        else
-        {
-            match = false;
             break;
         }
     }
-    if (match)//executed if the start of the users command is "help"
+
+    if(match)
     {
-        if (!command[4])//essentially, if only help is typed, does the help script
+        if(comm == "help")
         {
             printl("\tCommands:\n\t--------------------\n\t'add'\n\t\tAdds a part to the database. You are required to specify the location, quantity.\n\tExample:\n\t\tadd resistor 356 -s 20k -v 5 -t 1% -p 5\n\t--------------------\n\t'view'\n\t\tView the database. Add no modifiers to view the entire database.\n\tExample:\n\t\tview resistors -s quantity \n\t--------------------\n\tTo create a new class, such as resistor or mosfet, type 'class' followed by the class name. The class tutorial will help you set up your class.\n\t--------------------\n\tTo get help about a specific flag, type help, and then the flag.", OK);
             return;
         }
-
-        //outputting error command if something different happens - if it doesn't follow 'help -[letter]'
-        if (command[4] != ' ')
-        {
-            printl("Unknown Command!",ERR);
-            return;
-        }
-        if (command[5] != '-')
-        {
-            printl("Unknown Command!",ERR);
-            return;
-        }
-        if (command[7])
-        {
-            printl("Unknown Command!",ERR);
-            return;
-        }
-
-        //so in all other instances from here on, it is assumed that help from a flag is requested - for example: 'help -q' or 'help -v'.
-        //If this isn't the case, the unknown command error will be output.
-
-        std::string flags = "vtsn";
-
-        for (unsigned int i = 0; i < flags.length(); i++)
-        {
-            if (flags[i] == command[6])
-            {
-                if (i == 0)
-                {
-                    printl("\tThis flag specifies the value of the component.\n\tExample:\n\t\tadd resistor 256 -v 20k\n\t\tThis example adds a resistor to the database in location 2, drawer 5, section 6 with the value 20k, determined by the flag.",OK);
-                    return;
-                }
-                if (i == 1)
-                {
-                    printl("\tTolerance of the component, as a percentage.\n\tExample:\n\t\tadd resistor -v 20k -t 1%", OK);
-                    return;
-                }
-                if (i == 2)
-                {
-                    printl("\tSorts by a flag, or sorts by \n\tUsage:\tfor command 'view'\n\tDefault:\tAlphabetically sorted.", OK);//needs to be smart enough to sort 20k to be more than 2M
-                    return;
-                }
-                if (i == 3)
-                {
-                    printl("\tCreates a new flag. The tutorial associated with the creation guides you through the process.", OK);
-                    return;
-                }
-            }
-        }
     }
     else
     {
-        printl("Unknown Command!", ERR);
-        return;
+        printl("Unknown Command: " + command, ERR);
     }
-
 }
 
 int main()
