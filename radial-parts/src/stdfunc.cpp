@@ -42,6 +42,11 @@ void printl(std::string str, int status)
         setcol(ERR_COL);
         std::cout << "[ERR] ";
     }
+    else if(status == INFO)
+    {
+        setcol(INFO_COL);
+        std::cout << "[INFO]";
+    }
 
     setcol(0x07);
     std::cout << str << std::endl;

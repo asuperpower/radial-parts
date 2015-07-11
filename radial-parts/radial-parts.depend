@@ -19,7 +19,7 @@
 	<stdfunc.h>
 	<baseio.h>
 
-1436620547 e:\users\jesse\documents\github\radial-parts\radial-parts\include\stdfunc.h
+1436624071 e:\users\jesse\documents\github\radial-parts\radial-parts\include\stdfunc.h
 	<iostream>
 	<cstdlib>
 	<cstring>
@@ -30,10 +30,10 @@
 
 1436609111 e:\users\jesse\documents\github\radial-parts\radial-parts\include\baseio.h
 
-1436620768 source:e:\users\jesse\documents\github\radial-parts\radial-parts\src\stdfunc.cpp
+1436624100 source:e:\users\jesse\documents\github\radial-parts\radial-parts\src\stdfunc.cpp
 	<stdfunc.h>
 
-1436620739 source:e:\users\jesse\documents\github\radial-parts\radial-parts\parts.cpp
+1436624144 source:e:\users\jesse\documents\github\radial-parts\radial-parts\parts.cpp
 	<stdfunc.h>
 	<baseio.h>
 

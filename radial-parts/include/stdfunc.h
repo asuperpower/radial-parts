@@ -33,10 +33,12 @@
 #define OK      0
 #define WARN    1
 #define ERR     2
+#define INFO    3
 
 #define OK_COL      0x0A
 #define WARN_COL    0x0E
 #define ERR_COL     0x0C
+#define INFO_COL    0x0B
 
 void                        printl(std::string str, int status);
 std::string                 handle_input();
