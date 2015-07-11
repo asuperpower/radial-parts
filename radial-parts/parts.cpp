@@ -14,6 +14,8 @@
 #include <stdfunc.h>
 #include <baseio.h>
 
+#define COMMAND 0
+
 bool running = true;
 
 std::fstream parts;
@@ -51,18 +53,15 @@ void select(std::string input)
 void commandhandler(std::string command)
 {
     bool match = false;
-    std::string commands[] = {"help", "exit"};
+    std::string commands[] = {"help", "view", "exit"};
 
-    //Get position of each space in the entire string of input
-    std::string::size_type pos = command.find_first_of(' '); //Find positions where a ',' is located
-
-    //Extract the command part of the data
-    std::string comm = command.substr(0, pos);
+    //Split our string into chunks according to where a space is!
+    std::vector<std::string> args = split(command, ' ');
 
     //Check for valid commands
     for(unsigned int i = 0; i < sizeof(commands) / sizeof(*commands); i++) //Divide the sizeof the array (in characters) by the size of a character pointer
     {
-        if(comm == commands[i])
+        if(args[COMMAND] == commands[i])
         {
             match = true;
             break;
@@ -71,9 +70,20 @@ void commandhandler(std::string command)
 
     if(match)
     {
-        if(comm == "help")
+        if(args[COMMAND] == "help")
         {
-            printl("\tCommands:\n\t--------------------\n\t'add'\n\t\tAdds a part to the database. You are required to specify the location, quantity.\n\tExample:\n\t\tadd resistor 356 -s 20k -v 5 -t 1% -p 5\n\t--------------------\n\t'view'\n\t\tView the database. Add no modifiers to view the entire database.\n\tExample:\n\t\tview resistors -s quantity \n\t--------------------\n\tTo create a new class, such as resistor or mosfet, type 'class' followed by the class name. The class tutorial will help you set up your class.\n\t--------------------\n\tTo get help about a specific flag, type help, and then the flag.", OK);
+            if(args[1] == "-s")
+            {
+                printl("TODO: Info here!", INFO);
+                return;
+            }
+            printl("\tCommands:\n\t--------------------\n\t'add'\n\t\tAdds a part to the database. You are required to specify the location, quantity.\n\tExample:\n\t\tadd resistor 356 -s 20k -v 5 -t 1% -p 5\n\t--------------------\n\t'view'\n\t\tView the database. Add no modifiers to view the entire database.\n\tExample:\n\t\tview resistors -s quantity \n\t--------------------\n\tTo create a new class, such as resistor or mosfet, type 'class' followed by the class name. The class tutorial will help you set up your class.\n\t--------------------\n\tTo get help about a specific flag, type help, and then the flag.", INFO);
+            return;
+        }
+
+        if(args[COMMAND] == "exit")
+        {
+            exit(0x00); //Exit with status code 0
             return;
         }
     }
