@@ -52,13 +52,14 @@ void select(std::string input)
     }
 }
 
-std::string flagread()
+std::vector<std::string> flagread()
 {
     std::string flagfile;
     flags.open("flags.csv", std::ios::out | std::ios::app | std::ios::binary);
     while(std::getline(flags, flagfile));
     flags.close();
-    return flagfile;
+    std::vector<std::string> flagread = split(flagfile, '\n');
+    return flagread;
 }
 
 void flagwrite(std::string command)
@@ -253,10 +254,13 @@ void commandhandler(std::string command)
             if(args[1] == "change")
             {
                 printl("designed to change a flag of an item.", INFO);//ADD MORE INFO LATERRRRR
+                return;
             }
 
 
             //flag help ---------------------
+
+            //manual flag help - takes precedence as always has better automation.
             if(args[1] == "-q")
             {
                 printl("Specifies the quantity to be added. A required flag.", INFO);//thinking about adding something that makes it default to 1 if no flag is added... that is for another day though.
