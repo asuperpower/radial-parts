@@ -53,29 +53,76 @@ void select(std::string input)
 
 void adder(std::string command)
 {
+    //removes add from the 'command', then adds it to 'newpart'
+    //original string:
+    //  add resistor 256 -v 20k -t 1% -p 1/2W
 
+    //looks at amount of spaces in the command (and subtracts one from it because the first space is ignored as it is after add which is removed)
+    //essentially it takes 'add resistor 256 -v 20k -t 1% -p 1/2W', counts the spaces and subtracts one to see how many elements the array newpart will need.
+    //so while the above will have 8 spaces, 'resistor 256 -v 20k -t 1% -p 1/2W' which will be stored in the new array will only have 7.
+
+    unsigned int z = 0;
+    for (unsigned int i = 0; i < sizeof(command); i++)
+    {
+        if (command[i] == ' ')
+        {
+            z++;
+        }
+    }
+    z -= 1; //one is removed from z, see above comment.
+
+    if(z == 0)
+    {
+        printl("Something went wrong! (Amount of spaces in string returned zero)", ERR);
+    }
+
+    std::string newpart[z];
+
+    std::vector<std::string> args = split(command, ' ');
+    int idx = 1;
+    do
+    {
+        newpart[idx-1] = args[idx];
+    }
+    while (args[idx] != "\0");
+
+    //needs to check class file to ensure all flags are specified. If there is an error, it should state any missing flag(s)
+    parts.open("parts.csv", std::ios::out | std::ios::app);
+    //adds new line to file.
+    std::fstream classes("parts.csv", std::ios_base::app | std::ios_base::out);//http://stackoverflow.com/questions/10071137/appending-a-new-line-in-a-filelog-file-in-c
+    classes << newpart;
+    classes.close();
+
+
+
+    /*bool missing = true;
+
+    if (missing)
+    {
+        printl("Missing flags: ", ERR)
+    }*/
 }
 
 void viewer(std::string command)
 {
     //example view command:
     //view resistors -s quantity
-    //where -s is sort by
+    //where -s is sort by []
+    //must lookup class file to see what flags need to be displayed
 }
 
 //This function adds a new class and stores it in a file called classfile.csv
 void classhandler(std::string command)
 {
-
-    std::vector<std::string> args = split(command, ' ');
-
     //this ignores the first part of the command as it is class and does not need to be added to the file
     //so instead of adding 'class resistor svt' , it adds 'resistor svt'
     std::string classToBeAdded[2];
+
+    std::vector<std::string> args = split(command, ' ');
     int idx = 1;
     do
     {
-        classToBeAdded[idx-1] = command[idx];
+        classToBeAdded[idx-1] = args[idx];
     }
     while (args[idx] != "\0");
     classes.open("classes.csv", std::ios::out | std::ios::app);
@@ -88,7 +135,7 @@ void classhandler(std::string command)
 void commandhandler(std::string command)
 {
     bool match = false;
-    std::string commands[] = {"help", "add", "flag", "class", "view", "exit"};
+    std::string commands[] = {"help", "add", "flag", "class", "view", "change", "exit"};
 
     //Split our string into chunks according to where a space is!
     std::vector<std::string> args = split(command, ' ');
@@ -124,21 +171,30 @@ void commandhandler(std::string command)
                 return;
             }
 
+            if(args[1] == "change")
+            {
+                printl("designed to change a flag of an item.", INFO);//ADD MORE INFO LATERRRRR
+            }
+
 
             //flag help ---------------------
+            if(args[1] == "-q")
+            {
+                printl("Specifies the quantity to be added. A required flag.", INFO);//thinking about adding something that makes it default to 1 if no flag is added... that is for another day though.
+            }
             if(args[1] == "-v")
             {
-                printl("\tThis flag specifies the value of the component.\n\tExample:\n\t\tadd resistor 256 -v 20k\n\t\tThis example adds a resistor to the database in location 2, drawer 5, section 6 with the value 20k, determined by the flag.",OK);
+                printl("\tThis flag specifies the value of the component.\n\tExample:\n\t\tadd resistor 256 -v 20k\n\t\tThis example adds a resistor to the database in location 2, drawer 5, section 6 with the value 20k, determined by the flag.",INFO);
                 return;
             }
             if(args[1] == "-t")
             {
-                printl("\tTolerance of the component, as a percentage.\n\tExample:\n\t\tadd resistor -v 20k -t 1%", OK);
+                printl("\tTolerance of the component, as a percentage.\n\tExample:\n\t\tadd resistor -v 20k -t 1%", INFO);
                 return;
             }
             if(args[1] == "-s")
             {
-                printl("\tSorts by a flag, or sorts by \n\tUsage:\tfor command 'view'\n\tDefault:\tAlphabetically sorted.", OK);//needs to be smart enough to sort 20k to be more than 2M
+                printl("\tSorts by a flag, or sorts by \n\tUsage:\tfor command 'view'\n\tDefault:\tAlphabetically sorted.", INFO);//needs to be smart enough to sort 20k to be more than 2M
                 return;
             }
 
