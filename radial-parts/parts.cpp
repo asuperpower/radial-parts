@@ -215,7 +215,7 @@ void classhandler(std::string command)
 void commandhandler(std::string command)
 {
     bool match = false;
-    std::string commands[] = {"help", "add", "flagwrite", "flagdelete", "class", "view", "change", "exit"};
+    std::string commands[] = {"help", "add", "flagwrite", "flagdelete", "class", "view", "change", "cls", "clear", "exit"};
 
     //Split our string into chunks according to where a space is!
     std::vector<std::string> args = split(command, ' ');
@@ -232,6 +232,11 @@ void commandhandler(std::string command)
 
     if(match)
     {
+        if(args[COMMAND] == "cls" || args[COMMAND] == "clear")
+        {
+            cls();
+        }
+
         if(args[COMMAND] == "help")
         {
             //misc help ---------------------
