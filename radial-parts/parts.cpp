@@ -187,6 +187,7 @@ void viewer(std::string command)
     //view resistors -s quantity
     //where -s is sort by []
     //must lookup class file to see what flags need to be displayed
+
 }
 
 //This function adds a new class and stores it in a file called classfile.csv
