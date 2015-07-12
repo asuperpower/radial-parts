@@ -52,10 +52,13 @@ void select(std::string input)
     }
 }
 
-std::string flagread(std::string command)
+std::string flagread()
 {
-    //input command example: flagread
-    return "kqly";
+    std::string flagfile;
+    flags.open("flags.csv", std::ios::out | std::ios::app | std::ios::binary);
+    while(std::getline(flags, flagfile));
+    flags.close();
+    return flagfile;
 }
 
 void flagwrite(std::string command)
