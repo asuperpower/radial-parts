@@ -41,6 +41,8 @@
 #define INFO_COL    0x0B
 
 void                        printl(std::string str, int status);
+void                        cls(); //NOTE: THIS IS VERY HACKY!! conio.h MAY NOT EXIST ON ALL SYSTEMS!!
+
 std::string                 handle_input();
 std::vector<std::string>    split(const std::string& input, const char& delim);
 
