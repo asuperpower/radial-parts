@@ -115,8 +115,9 @@ void flagwrite(std::string command)
         }
     }
 
-    std::string newflag[sizeof(command)];
-    std::strcat(newflag, string1, string2);
+    //std::string newflag[sizeof(command)];
+    //std::strcat(newflag, string1, string2);
+    std::string newflag = *string1 + *string2;
 
     flags.open("flags.csv", std::ios::out | std::ios::app);
     //adds new line to file.
