@@ -65,8 +65,6 @@ void flagwrite(std::string command)
     //example:
     //flagwrite q Quantity Specifies the quantity to be added. A required flag.
 
-    std::string newflag[3];
-
     //ok, so we need to add a new flag in the file from the command 'flagwrite [letter] [name] [description]'
     //we can't seperate by spaces just yet as the description is allowed to have spaces.
     //this file has to be handled different to others, they have to be comma seperated rather than space seperated.
@@ -116,6 +114,9 @@ void flagwrite(std::string command)
             string1[j] = ",";
         }
     }
+
+    std::string newflag[sizeof(command)];
+    std::strcat(newflag, string1, string2);
 
     flags.open("flags.csv", std::ios::out | std::ios::app);
     //adds new line to file.
