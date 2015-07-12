@@ -51,6 +51,18 @@ void select(std::string input)
     }
 }
 
+void adder(std::string command)
+{
+
+}
+
+void viewer(std::string command)
+{
+    //example view command:
+    //view resistors -s quantity
+    //where -s is sort by
+}
+
 //This function adds a new class and stores it in a file called classfile.csv
 void classhandler(std::string command)
 {
@@ -139,12 +151,12 @@ void commandhandler(std::string command)
                 return;
             }
 
-            //SOMETIMES this comes back as true when only 'help' is typed
-            if ((args[1][0] > 0x41 && args[1][0] < 0x5A) || (args[1][0] > 0x61 && args[1][0] < 0x7A))
+            //SOMETIMES this comes back as true when only 'help' is typed - code commented out as it is not reliable.
+            /*if ((args[1][0] > 0x41 && args[1][0] < 0x5A) || (args[1][0] > 0x61 && args[1][0] < 0x7A))
             {
                 printl("\tINVALID HELP COMMAND: " + command, ERR);
                 return;
-            }
+            }*/
             else
             {
                 printl("\tCommands:\n\t--------------------\n\t'add'\n\t\tAdds a part to the database. You are required to specify the location, quantity.\n\tExample:\n\t\tadd resistor 356 -s 20k -v 5 -t 1% -p 5\n\n\t--------------------\n\t'view'\n\t\tView the database. Add no modifiers to view the entire database.\n\tExample:\n\t\tview resistors -s quantity \n\n\t--------------------\n\tFor help on adding a new class, type 'help class'.\n\n\t--------------------\n\tTo get help about a specific flag, type help, and then the flag.\n\tExample:\n\t\thelp -s", INFO);
@@ -173,6 +185,7 @@ void commandhandler(std::string command)
     else
     {
         printl("Unknown Command: " + command, ERR);
+        return;
     }
 }
 

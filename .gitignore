@@ -1,3 +1,7 @@
+#Random c++ crap
+*.layout
+*.depend
+
 # Compiled Object files
 *.slo
 *.lo
