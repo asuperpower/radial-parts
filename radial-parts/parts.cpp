@@ -57,16 +57,19 @@ void classhandler(std::string command)
 
     std::vector<std::string> args = split(command, ' ');
 
-    //this ignores the first part of the
+    //this ignores the first part of the command as it is class and does not need to be added to the file
+    //so instead of adding 'class resistor svt' , it adds 'resistor svt'
+    std::string classToBeAdded[2];
     int idx = 1;
     do
     {
-
+        classToBeAdded[idx-1] = command[idx];
     }
     while (args[idx] != "\0");
     classes.open("classes.csv", std::ios::out | std::ios::app);
     //adds new line to file.
     std::fstream classes("classes.csv", std::ios_base::app | std::ios_base::out);//http://stackoverflow.com/questions/10071137/appending-a-new-line-in-a-filelog-file-in-c
+    classes << classToBeAdded;
     classes.close();
 }
 
