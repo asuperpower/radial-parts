@@ -2,6 +2,9 @@
 *.layout
 *.depend
 
+#database files
+*.csv
+
 # Compiled Object files
 *.slo
 *.lo

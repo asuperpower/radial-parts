@@ -18,11 +18,11 @@
 
 bool running = true;
 
-std::fstream parts;
-std::fstream classes;
-std::fstream flags;
+std::fstream parts("parts.csv");
+std::fstream classes("classes.csv");
+std::fstream flags("flags.csv");
 
-//Select what we want to do
+//Select what we want to do - example function, not used in the program... probably.
 void select(std::string input)
 {
     //Crude way of splitting strings
@@ -136,41 +136,127 @@ void adder(std::string command)
     //original string:
     //  add resistor 256 -v 20k -t 1% -p 1/2W
 
-    //looks at amount of spaces in the command (and subtracts one from it because the first space is ignored as it is after add which is removed)
-    //essentially it takes 'add resistor 256 -v 20k -t 1% -p 1/2W', counts the spaces and subtracts one to see how many elements the array newpart will need.
-    //so while the above will have 8 spaces, 'resistor 256 -v 20k -t 1% -p 1/2W' which will be stored in the new array will only have 7.
+    //needs to check class file to ensure all flags are specified. If there is an error, it should state any missing flag(s)
+    classes.open("classes.csv", std::ios::out | std::ios::app);
+    std::string classfile;
+    while(getline(classes, classfile));
+    classes.close();
+    std::vector<std::string> args = split(command, ' ');
 
-    unsigned int z = 0;
-    for (unsigned int i = 0; i < sizeof(command); i++)
+    //split the csv getline
+    std::vector<std::string> classidx = split(classfile, 0);
+    //split the command by space so we can compare the following:
+    /* the class file should look like this:
+    resistor qvtp
+    n-chn qcvpb //b is beta value, c is code
+    capacitor qvtp
+    */
+
+    //ERROR CHECKING TO MAKE SURE THAT THE CLASS IS A MATCH
+    //WHERE THE COMMAND IS:
+    //add [class] [location] [-q flag] [other flags]
+    bool match = false;
+
+    std::string classcommand;
+
+    for (unsigned int i = 0; i <= classidx.size(); i++)
     {
-        if (command[i] == ' ')
+        std::string tempclassati = classidx[i];
+        std::string classmatcher;
+        for (unsigned int j = 0; tempclassati[j] != ' '; j++)//removes everything after the space from tempclassati and puts it in classmatcher
         {
-            z++;
+            classmatcher[j] = tempclassati[j];
+        }
+
+        if (classmatcher == args[1]) //args[1] is [classname]
+        {
+            //we found a match!
+            //before the break the loop, we better take that class line (classidx[i]), which looks something like 'resistor qvtp'
+            //we are taking tempclassati and processing that
+            //two questions: a) why take that and b) why are we processing that?
+            //a) we don't use classmatcher as that only takes 'resistor' and not 'qvtp', which are the accepted flags, which is the part we want.
+            //b) we need the flags for later and it's nice to just have the string "qvtp" so we can put it in a for loop and compare it later
+
+            for(unsigned int l = tempclassati.length(); tempclassati[l] != ' '; l--)
+            {
+               int sizebeforespace = 0;
+               for (i = 0; i <= tempclassati.length(); i++)
+               {
+                   if (tempclassati[i] == ' ')
+                   {
+                       sizebeforespace++;
+                       break;
+                   }
+                   else
+                   {
+                       sizebeforespace++;
+                   }
+               }
+               classcommand[l-sizebeforespace] = tempclassati[l];
+            }
+
+            match = true;
+            break;
         }
     }
-    z -= 1; //one is removed from z, see above comment.
-
-    if(z == 0)
+    if (!match)
     {
-        printl("Something went wrong! (Amount of spaces in string returned zero)", ERR);
+        printl("No such class " + args[1] + " found in database.", ERR);
+        exit(0xF1);
     }
 
-    std::string newpart[z];
+    //END ERROR CHECKING FOR CLASS MATCH
 
-    std::vector<std::string> args = split(command, ' ');
-    int idx = 1;
-    do
+    //Now we check the flags...
+    //for the command
+    /*add resistor 256 -v 20k -t 1% -p 1/2W*/
+    //the flags start at the fourth command argument, therefore we set 'flagstart' to 4.
+    const unsigned int flagstart = 4;
+    for (unsigned int i = flagstart; i <= args.size(); i += 2)
+    //THE REASON i increments by 2
+    //in this, we are checking to ensur that the first part of the command (args)'s flag is - to ensure it is a flag
     {
-        newpart[idx-1] = args[idx];
-    }
-    while (args[idx] != "\0");
+        bool issue = false;
+        std::string temparg = args[i];
+        if (temparg[0] != '-')
+        {
+            issue = true;
+        }
+        if(issue)
+        {
+            printl("found non-flag command argument where there should be a flag command argument.", ERR);
+            return;
+        }
 
-    //needs to check class file to ensure all flags are specified. If there is an error, it should state any missing flag(s)
+        //searches through flags
+        bool found = false;
+        for (unsigned int h = 0; h <= classcommand.length(); h++)
+        {
+            if (temparg[1] == classcommand[h])
+            {
+                found = true;
+                break;
+            }
+        }
+
+        if(!found)
+        {
+            printl("found non-flag command argument where there should be a flag command argument: " , ERR);
+            return;
+        }
+
+
+    }
+
+
     parts.open("parts.csv", std::ios::out | std::ios::app);
-    //adds new line to file.
-    std::fstream classes("parts.csv", std::ios_base::app | std::ios_base::out);//http://stackoverflow.com/questions/10071137/appending-a-new-line-in-a-filelog-file-in-c
-    classes << newpart << std::endl;
-    classes.close();
+    for (unsigned int i = 0; i <= args.size(); i++)
+    {
+        parts << args[i];
+        parts << ',';
+    }
+    parts << std::endl;
+    parts.close();
 
 
 
@@ -189,26 +275,29 @@ void viewer(std::string command)
     //where -s is sort by []
     //must lookup class file to see what flags need to be displayed
 
+    //as usual we begin by removing the view command at the start so it's just 'resistors -s quantity'
+
+    //then we check if resistors is a class match
 }
 
 //This function adds a new class and stores it in a file called classfile.csv
 void classhandler(std::string command)
 {
-    //this ignores the first part of the command as it is class and does not need to be added to the file
-    //so instead of adding 'class resistor svt' , it adds 'resistor svt'
-    std::string classToBeAdded[2];
-
+    //NOTE: need to add checking to ensure is valid flag
+    //example: if the input is 'class resistor qtc
     std::vector<std::string> args = split(command, ' ');
-    int idx = 1;
-    do
+
+    //error checking
+    if (args.size() > 3)//if it exists - if more than 3 arguments
     {
-        classToBeAdded[idx-1] = args[idx];
+        printl("\tBad Command\n\tReason:\tToo Many Arguments\n\tCommand:\n\t\t" + command, ERR);
+        return;
     }
-    while (args[idx] != "\0");
+
     classes.open("classes.csv", std::ios::out | std::ios::app);
-    //adds new line to file.
-    std::fstream classes("classes.csv", std::ios_base::app | std::ios_base::out);//http://stackoverflow.com/questions/10071137/appending-a-new-line-in-a-filelog-file-in-c
-    classes << classToBeAdded << std::endl;
+
+    classes << args[1] << ',' << args[2] << std::endl;
+
     classes.close();
 }
 
@@ -280,6 +369,13 @@ void commandhandler(std::string command)
                 printl("\tTolerance of the component, as a percentage.\n\tExample:\n\t\tadd resistor -v 20k -t 1%", INFO);
                 return;
             }
+            if(args[1] == "-p")
+            {
+                printl("\tMax Power of the Component, as a Percentage.\n\tExample:\n\t\tadd resistor -v 20k -p 1/2W", INFO);
+                return;
+            }
+            if(args[1] == "-c")
+                printl("\tComponent Code.\n\tExample:\n\t\tadd n-chnFET -q 3 -c 510", INFO);
             if(args[1] == "-s")
             {
                 printl("\tSorts by a flag, or sorts by \n\tUsage:\tfor command 'view'\n\tDefault:\tAlphabetically sorted.", INFO);//needs to be smart enough to sort 20k to be more than 2M
@@ -314,13 +410,53 @@ void commandhandler(std::string command)
             return;
         }
 
-        if (args[COMMAND] == "class")
+        if (args[COMMAND] == "add")
         {
-            classhandler(command);
+            adder(command);
             return;
         }
 
-        if(args[COMMAND] == "exit")
+        if (args[COMMAND] == "class")
+        {
+            if(args.size() == 1)
+            {
+                //lists all of the classes
+
+                //opens class file, imports into string
+                //seperates into vector, splits with \n
+                //prints each string until it finds a space, then prints each induvidual letter preceded by a space and a dash (-)
+
+                //example:
+                /*file is
+                resistor qvtp
+                n-chn qcvpb //b is beta value, c is code
+                capacitor qvtp
+                */
+                /*output is:
+                class:
+                    resistor
+                flags:
+                    -q -v -t -p
+
+                class:
+                    n-chn qcvpb
+                flags:
+                    -q -c -v -p -b
+
+                class:
+                    capacitor
+                flags:
+                    -q -v -t -p
+                */
+            }
+            else
+            {
+                classhandler(command);
+            }
+            return;
+        }
+
+        if(args[COMMAND] == "exit" || args[COMMAND] == "quit")
         {
             exit(0x00); //Exit with status code 0
             return;
