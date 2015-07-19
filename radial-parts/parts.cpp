@@ -52,7 +52,7 @@ void select(std::string input)
     }
 }
 
-std::vector<std::string> flagread()
+/*std::vector<std::string> flagread()
 {
     std::string flagfile;
     flags.open("flags.csv", std::ios::out | std::ios::app | std::ios::binary);
@@ -60,7 +60,7 @@ std::vector<std::string> flagread()
     flags.close();
     std::vector<std::string> flagread = split(flagfile, '\n');
     return flagread;
-}
+}*/
 
 void flagwrite(std::string command)
 {
@@ -69,63 +69,19 @@ void flagwrite(std::string command)
     //example:
     //flagwrite q Quantity Specifies the quantity to be added. A required flag.
 
-    //ok, so we need to add a new flag in the file from the command 'flagwrite [letter] [name] [description]'
-    //we can't seperate by spaces just yet as the description is allowed to have spaces.
-    //this file has to be handled different to others, they have to be comma seperated rather than space seperated.
-    //however the command can't be comma seperated, this confuses the user
+    //I'VE GOT A BETTER WAY TO DO THIS!!!
+    //I BEGIN BY SPLITTING IT BY SPACE
+    std::vector<std::string> args = split(command, ' ');
+    std::string newflag;
+    //comma seperate the values manually, then add the rest to the string in the for loop.
+    newflag = args[1] + "," + args[2] + ",";
 
-    //so first thing we do is split the string in two
-    //so it's 'flagwrite [letter] [name]' or 'flagwrite q Quantity ' and 'Specifies the quantity to be added. A required flag.'
-    //(notice the the space is in the first string)
-    //to split the string, we need to find where - and it's always 1 after the 3rd space. In the example the second string would start at command[21].
-
-    //after we have two strings (lets call them string1 and string2)
-
-    //we first remove 'flagwrite ' from the first one (including the space) and add it to a new string, lets call it string 1-1
-    //next we take them, we turn the spaces in string 1-1 to commas and we rejoin them and write them to the file
-
-    //-algorithm -----start ---------
-    //find the third space so we know where to split the string
-    unsigned int s = 0; //s stands for space! we stop when this is equal to 3!
-    unsigned int i = 0;
-    do
+    for (unsigned int i = 3; i <= args.size(); i++)
     {
-        if (command[i] == ' ')
-        {
-            s++;
-        }
-        i++;
+        newflag += args[i];
     }
-    while (s < 3);
-    //i is now where the new string should start.
-    std::string string1[i-1];
-    std::string string2[sizeof(command)-(i-1)];
-
-    for (unsigned int k = 0; k < i; k++)//k < c means it stops before it reaches the space.
-    {
-        string1[k] = command[k];
-    }
-    for (unsigned int k = i; k < sizeof(command); k++)
-    {
-        string2[k] = command[k];
-    }
-
-    //turns all of the spaces in string1 into commas
-    for (unsigned int j = 0; j < sizeof(string1); j++)
-    {
-        if (string1[j] == " ")
-        {
-            string1[j] = ",";
-        }
-    }
-
-    //std::string newflag[sizeof(command)];
-    //std::strcat(newflag, string1, string2);
-    std::string newflag = *string1 + *string2;
 
     flags.open("flags.csv", std::ios::out | std::ios::app);
-    //adds new line to file.
-    std::fstream classes("flags.csv", std::ios_base::app | std::ios_base::out);//http://stackoverflow.com/questions/10071137/appending-a-new-line-in-a-filelog-file-in-c
     flags << newflag << std::endl;
     flags.close();
 }
@@ -272,7 +228,7 @@ void viewer(std::string command)
 {
     //example view command:
     //view resistors -s quantity
-    //where -s is sort by []
+    //where -s is sort by [property]
     //must lookup class file to see what flags need to be displayed
 
     //as usual we begin by removing the view command at the start so it's just 'resistors -s quantity'
@@ -351,6 +307,11 @@ void commandhandler(std::string command)
                 return;
             }
 
+            if(args[1] == "flagwrite")
+            {
+                printl("Syntax:\t flagwrite [flag letter] [flag name] [flag description]\n\n\tExample:\n\t\tflagwrite q Quantity Specifies the quantity to be added. A required flag.", INFO);//ADD MORE INFO LATERRRRR
+                return;
+            }
 
             //flag help ---------------------
 
@@ -413,6 +374,12 @@ void commandhandler(std::string command)
         if (args[COMMAND] == "add")
         {
             adder(command);
+            return;
+        }
+
+        if (args[COMMAND] == "flagwrite")
+        {
+            flagwrite(command);
             return;
         }
 
