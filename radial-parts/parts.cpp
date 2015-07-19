@@ -22,6 +22,11 @@ std::fstream parts("parts.csv");
 std::fstream classes("classes.csv");
 std::fstream flags("flags.csv");
 
+//COMMON ERROR CODES:
+/*
+0xA0: Comma found in command
+*/
+
 //Select what we want to do - example function, not used in the program... probably.
 void select(std::string input)
 {
@@ -73,12 +78,29 @@ void flagwrite(std::string command)
     //I BEGIN BY SPLITTING IT BY SPACE
     std::vector<std::string> args = split(command, ' ');
     std::string newflag;
+
+    //error checking - commas are very not allowed as it stuffs up the file IO.
+    for (unsigned int a = 1; a <= args.size(); a++)
+    {
+        for (unsigned int b = 0; b <= args[a].length(); b++)
+        {
+            std::string word = args[a];
+            if (word[b] == ',')
+            {
+                printl("Commas are not allowed in the command.", ERR);
+                exit(0xA0);
+            }
+        }
+    }
+
     //comma seperate the values manually, then add the rest to the string in the for loop.
     newflag = args[1] + "," + args[2] + ",";
 
     for (unsigned int i = 3; i <= args.size(); i++)
     {
+        //adds the part of the space seperated string back to the string, adding the space back in the process.
         newflag += args[i];
+        newflag += ' ';
     }
 
     flags.open("flags.csv", std::ios::out | std::ios::app);
