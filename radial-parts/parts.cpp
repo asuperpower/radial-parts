@@ -67,6 +67,18 @@ void select(std::string input)
     return flagread;
 }*/
 
+bool commaexists(std::string command)
+{
+    for (unsigned int i = 0; i <= command.length(); i++)
+    {
+        if (command[i] == ',')
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 void flagwrite(std::string command)
 {
     //format:
@@ -74,27 +86,17 @@ void flagwrite(std::string command)
     //example:
     //flagwrite q Quantity Specifies the quantity to be added. A required flag.
 
-    //I'VE GOT A BETTER WAY TO DO THIS!!!
-    //I BEGIN BY SPLITTING IT BY SPACE
-    std::vector<std::string> args = split(command, ' ');
-    std::string newflag;
-
-    //error checking - commas are very not allowed as it stuffs up the file IO.
-    for (unsigned int a = 1; a <= args.size(); a++)
+    if(commaexists(command))
     {
-        for (unsigned int b = 0; b <= args[a].length(); b++)
-        {
-            std::string word = args[a];
-            if (word[b] == ',')
-            {
-                printl("Commas are not allowed in the command.", ERR);
-                exit(0xA0);
-            }
-        }
+        printl("USING COMMAS IS AN ILLEGAL OPERATION. COMMAND: '" + command + "' TERMINATED.", ERR);
+        return;
     }
 
+    std::vector<std::string> args = split(command, ' ');
+
     //comma seperate the values manually, then add the rest to the string in the for loop.
-    newflag = args[1] + "," + args[2] + ",";
+    std::string shortflag = args[1] + "," + args[2] + ",";
+    std::string newflag;
 
     for (unsigned int i = 3; i <= args.size(); i++)
     {
@@ -108,57 +110,12 @@ void flagwrite(std::string command)
     flags.close();
 }
 
-void adder(std::string command)
+void flagprocessor(std::string &tempclassati, std::string &classcommand)
 {
-    //removes add from the 'command', then adds it to 'newpart'
-    //original string:
-    //  add resistor 256 -v 20k -t 1% -p 1/2W
-
-    //needs to check class file to ensure all flags are specified. If there is an error, it should state any missing flag(s)
-    classes.open("classes.csv", std::ios::out | std::ios::app);
-    std::string classfile;
-    while(getline(classes, classfile));
-    classes.close();
-    std::vector<std::string> args = split(command, ' ');
-
-    //split the csv getline
-    std::vector<std::string> classidx = split(classfile, 0);
-    //split the command by space so we can compare the following:
-    /* the class file should look like this:
-    resistor qvtp
-    n-chn qcvpb //b is beta value, c is code
-    capacitor qvtp
-    */
-
-    //ERROR CHECKING TO MAKE SURE THAT THE CLASS IS A MATCH
-    //WHERE THE COMMAND IS:
-    //add [class] [location] [-q flag] [other flags]
-    bool match = false;
-
-    std::string classcommand;
-
-    for (unsigned int i = 0; i <= classidx.size(); i++)
-    {
-        std::string tempclassati = classidx[i];
-        std::string classmatcher;
-        for (unsigned int j = 0; tempclassati[j] != ' '; j++)//removes everything after the space from tempclassati and puts it in classmatcher
-        {
-            classmatcher[j] = tempclassati[j];
-        }
-
-        if (classmatcher == args[1]) //args[1] is [classname]
-        {
-            //we found a match!
-            //before the break the loop, we better take that class line (classidx[i]), which looks something like 'resistor qvtp'
-            //we are taking tempclassati and processing that
-            //two questions: a) why take that and b) why are we processing that?
-            //a) we don't use classmatcher as that only takes 'resistor' and not 'qvtp', which are the accepted flags, which is the part we want.
-            //b) we need the flags for later and it's nice to just have the string "qvtp" so we can put it in a for loop and compare it later
-
-            for(unsigned int l = tempclassati.length(); tempclassati[l] != ' '; l--)
+    for(unsigned int l = tempclassati.length(); tempclassati[l] != ' '; l--)
             {
                int sizebeforespace = 0;
-               for (i = 0; i <= tempclassati.length(); i++)
+               for (unsigned int i = 0; i <= tempclassati.length(); i++)
                {
                    if (tempclassati[i] == ' ')
                    {
@@ -172,27 +129,106 @@ void adder(std::string command)
                }
                classcommand[l-sizebeforespace] = tempclassati[l];
             }
+    return;
+}
 
-            match = true;
-            break;
+bool classmatcher(std::string &command, std::string &classcommand, std::string &tempclassati, std::vector<std::string> &args, std::vector<std::string> &classidx)
+{
+    //needs to check class file to ensure all flags are specified. If there is an error, it should state any missing flag(s)
+    classes.open("classes.csv", std::ios::out | std::ios::app);
+    std::string classfile;
+    while(getline(classes, classfile));
+    classes.close();
+
+    //split the command by space
+    args = split(command, ' ');
+    //split the csv by each newline
+    classidx = split(classfile, 0);
+    //split the command by space so we can compare the following:
+    /* the class file should look like this:
+    resistor qvtp
+    n-chn qcvpb //b is beta value, c is code
+    capacitor qvtp
+    */
+
+    //ERROR CHECKING TO MAKE SURE THAT THE CLASS IS A MATCH
+    //WHERE THE COMMAND IS:
+    //add [class] [location] [-q flag] [other flags]
+    //std::string classcommand /<-/WAS HERE
+
+    for (unsigned int i = 0; i <= classidx.size(); i++)
+    {
+        std::string tempclassati = classidx[i];//was//std::string tempclassati = classidx[i];
+        std::string classmatcher;//was//std::string classmatcher;
+        for (unsigned int j = 0; tempclassati[j] != ' '; j++)//removes everything after the space from tempclassati and puts it in classmatcher
+        {
+            classmatcher[j] = tempclassati[j];
+        }
+
+        if (classmatcher == args[1]) //args[1] is [classname]
+        {
+            //we found a match!
+            //before the break the loop, we better take that class line (classidx[i]), which looks something like 'resistor qvtp'
+            //we are taking tempclassati and processing that
+            //two questions: a) why take that and b) why are we processing that?
+            //a) we don't use classmatcher as that only takes 'resistor' and not 'qvtp', which are the accepted flags, which is the part we want.
+            //b) we need the flags for later and it's nice to just have the string "qvtp" so we can put it in a for loop and compare it later
+            //THIS PROCESS IS NOW DONE IN THE FUNCTION CALLED IN THE NEXT LINE
+            flagprocessor(tempclassati, classcommand);
+            return true;
         }
     }
-    if (!match)
+    return false;
+}
+
+void adder(std::string command)
+{
+    /*+===================================================================
+    Command Input Looks Like:
+    add resistor 256 -q 10 -v 20k -t 1% -p 1/2W
+
+    File Output Looks Like:
+    resistor,256,-q10,-v20,-t1%,-p1/2W,\n
+    ===================================================================+*/
+
+    if(commaexists(command))
     {
-        printl("No such class " + args[1] + " found in database.", ERR);
-        exit(0xF1);
+        printl("USING COMMAS IS AN ILLEGAL OPERATION. COMMAND: '" + command + "' TERMINATED.", ERR);
+        return;
     }
 
-    //END ERROR CHECKING FOR CLASS MATCH
+    /*+==========
+    These are created in THIS function,
+    then they are ALL passed into the function
+        bool classmatcher(...)
+    by reference
 
+    and then the following strings
+        tempclassati
+        classcommand
+    are passed by into the function
+        void flagprocessor(...)
+    by reference
+    ==========+*/
+    std::string classcommand;
+    std::string tempclassati;
+    std::vector<std::string> args;
+    std::vector<std::string> classidx;
+
+    bool classmatcher(std::string command, std::string classcommand, std::string tempclassati, std::vector<std::string> args, std::vector<std::string> classidx);
+    /*
     //Now we check the flags...
     //for the command
-    /*add resistor 256 -v 20k -t 1% -p 1/2W*/
+    add resistor 256 -v 20k -t 1% -p 1/2W
+    //or
+    add [class] [location] [-q flag] [other flags]
     //the flags start at the fourth command argument, therefore we set 'flagstart' to 4.
     const unsigned int flagstart = 4;
     for (unsigned int i = flagstart; i <= args.size(); i += 2)
-    //THE REASON i increments by 2
-    //in this, we are checking to ensur that the first part of the command (args)'s flag is - to ensure it is a flag
+    //THE REASON i increments by 2 is because every second one is a flag so...
+    //in the example 'add resistor 256 -v 20k -t 1% -p 1/2W'
+    //we skip to '-v 20k -t 1% -p 1/2W'
+    //and only check every second one ie: '-v', '-t', '-p'.
     {
         bool issue = false;
         std::string temparg = args[i];
@@ -222,11 +258,11 @@ void adder(std::string command)
             printl("found non-flag command argument where there should be a flag command argument: " , ERR);
             return;
         }
-
-
     }
+    */
 
-
+    //file should be saved like:
+    /*[class],[location],[-q flag],[other flags]*/
     parts.open("parts.csv", std::ios::out | std::ios::app);
     for (unsigned int i = 0; i <= args.size(); i++)
     {
@@ -253,6 +289,8 @@ void viewer(std::string command)
     //where -s is sort by [property]
     //must lookup class file to see what flags need to be displayed
 
+    //example saved file:
+
     //as usual we begin by removing the view command at the start so it's just 'resistors -s quantity'
 
     //then we check if resistors is a class match
@@ -273,16 +311,14 @@ void classhandler(std::string command)
     }
 
     classes.open("classes.csv", std::ios::out | std::ios::app);
-
     classes << args[1] << ',' << args[2] << std::endl;
-
     classes.close();
 }
 
 void commandhandler(std::string command)
 {
     bool match = false;
-    std::string commands[] = {"help", "add", "flagwrite", "flagdelete", "class", "view", "change", "cls", "clear", "exit"};
+    const std::string commands[] = {"help", "commands", "add", "flagwrite", "flagdelete", "class", "classinfo", "view", "change", "cls", "clear", "exit"};
 
     //Split our string into chunks according to where a space is!
     std::vector<std::string> args = split(command, ' ');
@@ -307,6 +343,14 @@ void commandhandler(std::string command)
         if(args[COMMAND] == "help")
         {
             //misc help ---------------------
+            if(args[1] == "commands")
+            {
+                /*std::string commanderino = "General Commands: ";
+                strcat(commanderino, commands);
+                printl(commanderino, INFO);*/
+                return;
+            }
+
             if(args[1] == "class")
             {
                 std::string classLine1 = "A class is a group of components. An example of a class would be a resistor, or n-channel mosfet.";
@@ -385,6 +429,14 @@ void commandhandler(std::string command)
                 printl("\tCommands:\n\t--------------------\n\t'add'\n\t\tAdds a part to the database. You are required to specify the location, quantity.\n\tExample:\n\t\tadd resistor 356 -s 20k -v 5 -t 1% -p 5\n\n\t--------------------\n\t'view'\n\t\tView the database. Add no modifiers to view the entire database.\n\tExample:\n\t\tview resistors -s quantity \n\n\t--------------------\n\tFor help on adding a new class, type 'help class'.\n\n\t--------------------\n\tTo get help about a specific flag, type help, and then the flag.\n\tExample:\n\t\thelp -s", INFO);
                 return;
             }
+        }
+
+        if (args[COMMAND] == "commands")
+        {
+            /*std::string commanderino = "General Commands: ";
+            strcat(commanderino, commands);
+            printl(commanderino, INFO);*/
+            return;
         }
 
         if (args[COMMAND] == "flag")
