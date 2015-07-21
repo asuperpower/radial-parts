@@ -22,9 +22,19 @@ std::fstream parts("parts.csv");
 std::fstream classes("classes.csv");
 std::fstream flags("flags.csv");
 
+//BUGS FOR ME TO LOOK FOR IN FUTURE:
+/*
+a) sometimes I think that /n = 0x0 which of course it isn't, sometimes I split at 0x0 instead of 0x10
+b) sometimes I do something weird in a for loop, if args[i].size() is found somewhere, it should be args.size
+*/
+
+//I should add from the start that while using the descriptor 'class' to describe the different types of components (resistors, capacitors etc.),
+//it's a meaningful way to describe it, so I will keep it that way for now.
+
 //COMMON ERROR CODES:
 /*
 0xA0: Comma found in command
+0xA1: General Error with Command
 */
 
 //Select what we want to do - example function, not used in the program... probably.
@@ -81,10 +91,18 @@ bool commaexists(std::string command)
 
 void flagwrite(std::string command)
 {
-    //format:
-    //flagwrite [letter] [name] [description]
-    //example:
-    //flagwrite q Quantity Specifies the quantity to be added. A required flag.
+    /*+===================================================================
+    Command Input Looks Like:
+    flagwrite [letter] [name] [description]
+
+    Example of this:
+    flagwrite q Quantity Specifies the quantity to be added. A required flag.
+
+    File Output Looks Like:
+    q,Quantity,Quantity Specifies the quantity to be added. A required flag.
+    NOTE:
+    Notice how the description isn't comma separated. Special tricks below!
+    ===================================================================+*/
 
     if(commaexists(command))
     {
@@ -143,7 +161,7 @@ bool classmatcher(std::string &command, std::string &classcommand, std::string &
     //split the command by space
     args = split(command, ' ');
     //split the csv by each newline
-    classidx = split(classfile, 0);
+    classidx = split(classfile, 0xA);
     //split the command by space so we can compare the following:
     /* the class file should look like this:
     resistor qvtp
@@ -215,92 +233,113 @@ void adder(std::string command)
     std::vector<std::string> args;
     std::vector<std::string> classidx;
 
-    bool classmatcher(std::string command, std::string classcommand, std::string tempclassati, std::vector<std::string> args, std::vector<std::string> classidx);
-    /*
-    //Now we check the flags...
-    //for the command
-    add resistor 256 -v 20k -t 1% -p 1/2W
-    //or
-    add [class] [location] [-q flag] [other flags]
-    //the flags start at the fourth command argument, therefore we set 'flagstart' to 4.
-    const unsigned int flagstart = 4;
-    for (unsigned int i = flagstart; i <= args.size(); i += 2)
-    //THE REASON i increments by 2 is because every second one is a flag so...
-    //in the example 'add resistor 256 -v 20k -t 1% -p 1/2W'
-    //we skip to '-v 20k -t 1% -p 1/2W'
-    //and only check every second one ie: '-v', '-t', '-p'.
+    if (!classmatcher(command, classcommand, tempclassati, args, classidx))
     {
-        bool issue = false;
-        std::string temparg = args[i];
-        if (temparg[0] != '-')
-        {
-            issue = true;
-        }
-        if(issue)
-        {
-            printl("found non-flag command argument where there should be a flag command argument.", ERR);
-            return;
-        }
-
-        //searches through flags
-        bool found = false;
-        for (unsigned int h = 0; h <= classcommand.length(); h++)
-        {
-            if (temparg[1] == classcommand[h])
-            {
-                found = true;
-                break;
-            }
-        }
-
-        if(!found)
-        {
-            printl("found non-flag command argument where there should be a flag command argument: " , ERR);
-            return;
-        }
+        printl("Error with command: '" + command + "' !!!", ERR);
+        exit(0xA1);
     }
-    */
 
-    //file should be saved like:
-    /*[class],[location],[-q flag],[other flags]*/
     parts.open("parts.csv", std::ios::out | std::ios::app);
-    for (unsigned int i = 0; i <= args.size(); i++)
+    //does the first 2 non-flag ones normally
+    for (unsigned int i = 1; i < 3; i++)
     {
         parts << args[i];
         parts << ',';
     }
+    //args[3] is the first flag, '-q'
+    //therefore, if the command input follows convention
+    for (unsigned int i = 3; i < args.size(); i++)
+    {
+
+    }
     parts << std::endl;
     parts.close();
+}
 
+std::string getFlags(std::string commandclass)
+{
+    classes.open("classes.csv", std::ios::out | std::ios::app);
+    std::string classfile;
+    while(getline(classes, classfile));
+    classes.close();
 
+    std::vector<std::string> args = split(classfile, 0xA);  //Splits at the newline character
 
-    /*bool missing = true;
-
-    if (missing)
+    for (unsigned int i = 0; i <= args.size(); i++)
     {
-        printl("Missing flags: ", ERR)
-    }*/
+        std::string classstring = args[i];
+        //std::vector<std::string> classline = (classstring, ',');
+        unsigned int commaPoint = 0;
+        for (unsigned int k = 0; k <= classstring.length(); k++)
+        {
+            if (classstring[k] == ',')
+            {
+                commaPoint = k;
+            }
+        }
+        if (!commaPoint)//this should never happen
+        {
+            printl("error in std::string getFlags(std::string commandclass) - commaPoint = 0 - no commas found in file (file corrupt?)", ERR);
+            exit (0xB0);
+        }
+
+        std::string className;
+        std::string classFlags;
+
+        for (unsigned int z = 0; z <= classstring.length(); z++)
+        {
+            std::string classtring = args[i];//why does this need to be here? IDK HALP
+            if (z < commaPoint)
+            {
+                className[z] = classtring[z];
+            }
+            if (z > commaPoint)
+            {
+                classFlags[z] = classstring[z];
+            }
+        }
+        if (className == classfile)
+        {
+            return classFlags;
+        }
+    }
+    return "0000";
 }
 
 void viewer(std::string command)
 {
-    //example view command:
-    //view resistors -s quantity
-    //where -s is sort by [property]
-    //must lookup class file to see what flags need to be displayed
+    /*+===================================================================
+    Command Input Looks Like:
+    view resistors -s quantity
+    where -s is sort by [property]
+    ===================================================================+*/
 
-    //example saved file:
+    std::vector<std::string> args = split(command, ' ');
+    const std::string commandclass = args[1];//the *command* specifies the class such as resistor, n-chn etc.
 
-    //as usual we begin by removing the view command at the start so it's just 'resistors -s quantity'
+    std::string flag = getFlags(commandclass);//gets the flags for the class - for example, the class resistor would be something like 'qvtp' (quantity, value etc.) (-q -v -t -p)
+    //the function getFlags returns "0000" if there is NOT a flag match, so we check...
+    if (flag == "0000")
+    {
+        printl("No class known as '" + commandclass + "' found!!!", ERR);
+        return;
+    }
 
-    //then we check if resistors is a class match
+    //Now we look at each flag file and find the corresponding name of the flag letter. For example, we look up the flag letter 'q' and find the name 'Quantity'
+
+    return;
 }
 
 //This function adds a new class and stores it in a file called classfile.csv
 void classhandler(std::string command)
 {
-    //NOTE: need to add checking to ensure is valid flag
-    //example: if the input is 'class resistor qtc
+    /*+===================================================================
+    Command Input Looks Like:
+    class resistor qtvp
+
+    File Output Looks Like:
+    resistor,qtvp
+    ===================================================================+*/
     std::vector<std::string> args = split(command, ' ');
 
     //error checking
