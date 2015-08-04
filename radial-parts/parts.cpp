@@ -24,7 +24,7 @@ std::fstream flags("flags.csv");
 
 //BUGS FOR ME TO LOOK FOR IN FUTURE:
 /*
-a) sometimes I think that /n = 0x0 which of course it isn't, sometimes I split at 0x0 instead of 0x10
+a) sometimes I think that /n = 0x0 which of course it isn't, sometimes I split at 0x0 instead of 0xA
 b) sometimes I do something weird in a for loop, if args[i].size() is found somewhere, it should be args.size
 */
 
@@ -35,6 +35,8 @@ b) sometimes I do something weird in a for loop, if args[i].size() is found some
 /*
 0xA0: Comma found in command
 0xA1: General Error with Command
+0xA2: Input is NULL!!!
+0xF0: Classfile not configured!!!
 */
 
 //Select what we want to do - example function, not used in the program... probably.
@@ -130,6 +132,10 @@ void flagwrite(std::string command)
 
 void flagprocessor(std::string &tempclassati, std::string &classcommand)
 {
+    /*
+    Essentially what this function does is check the classcommand input by the user against the flag file,
+    and because
+    */
     for(unsigned int l = tempclassati.length(); tempclassati[l] != ' '; l--)
             {
                int sizebeforespace = 0;
@@ -152,11 +158,18 @@ void flagprocessor(std::string &tempclassati, std::string &classcommand)
 
 bool classmatcher(std::string &command, std::string &classcommand, std::string &tempclassati, std::vector<std::string> &args, std::vector<std::string> &classidx)
 {
+    //NOTE::THIS FUNCTION IS CAUSING A SEGFAULT
     //needs to check class file to ensure all flags are specified. If there is an error, it should state any missing flag(s)
     classes.open("classes.csv", std::ios::out | std::ios::app);
     std::string classfile;
     while(getline(classes, classfile));
     classes.close();
+
+    if (classfile == "")
+    {
+        printl("Classfile has not been configured!", ERR);
+        exit(0xF0);
+    }
 
     //split the command by space
     args = split(command, ' ');
@@ -340,13 +353,28 @@ void classhandler(std::string command)
     File Output Looks Like:
     resistor,qtvp
     ===================================================================+*/
+    if (command == "")
+    {
+        printl("Command is NULL - Something has gone wrong!!!", ERR);
+        exit(0xA2);
+    }
+
     std::vector<std::string> args = split(command, ' ');
 
     //error checking
-    if (args.size() > 3)//if it exists - if more than 3 arguments
+    if (args.size() != 3)//if it exists - if more than 3 arguments
     {
-        printl("\tBad Command\n\tReason:\tToo Many Arguments\n\tCommand:\n\t\t" + command, ERR);
-        return;
+        if (args.size() <3)
+        {
+            printl("\tBad Command\n\tReason:\tNot Enough Arguments!!!\n\tCommand:\n\t\t" + command, ERR);
+            return;
+        }
+        else
+        {
+            printl("\tBad Command\n\tReason:\tToo Many Arguments!!!\n\tCommand:\n\t\t" + command, ERR);
+            return;
+        }
+
     }
 
     classes.open("classes.csv", std::ios::out | std::ios::app);
@@ -359,10 +387,15 @@ void commandhandler(std::string command)
     bool match = false;
     const std::string commands[] = {"help", "commands", "add", "flagwrite", "flagdelete", "class", "classinfo", "view", "change", "cls", "clear", "exit"};
 
+    std::cout << commands[0];
+    while(1);
+
+
     //Split our string into chunks according to where a space is!
     std::vector<std::string> args = split(command, ' ');
 
     //Check for valid commands
+    //match = validcmdcheck(); -- turn this into function later..........
     for(unsigned int i = 0; i < sizeof(commands) / sizeof(*commands); i++) //Divide the sizeof the array (in characters) by the size of a character pointer
     {
         if(args[COMMAND] == commands[i])
@@ -384,9 +417,12 @@ void commandhandler(std::string command)
             //misc help ---------------------
             if(args[1] == "commands")
             {
-                /*std::string commanderino = "General Commands: ";
-                strcat(commanderino, commands);
-                printl(commanderino, INFO);*/
+                std::string commanderino = "General Commands: ";
+                for (unsigned int i = 0; i < command.size(); i++)
+                {
+                    commanderino += (command[i] + ",");
+                }
+                printl(commanderino, INFO);
                 return;
             }
 

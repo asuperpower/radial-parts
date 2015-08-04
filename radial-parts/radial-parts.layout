@@ -3,21 +3,13 @@
 	<ActiveTarget name="Debug" />
 	<File name="parts.cpp" open="1" top="1" tabpos="1" split="0" active="1" splitpos="0" zoom_1="1" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="8684" topLine="154" />
+			<Cursor1 position="14110" topLine="334" />
 		</Cursor>
 		<Folding>
-			<Collapse line="41" />
-			<Collapse line="80" />
-			<Collapse line="92" />
-			<Collapse line="131" />
-			<Collapse line="202" />
-			<Collapse line="212" />
+			<Collapse line="43" />
+			<Collapse line="82" />
+			<Collapse line="94" />
 		</Folding>
-	</File>
-	<File name="include\stdfunc.h" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="827" topLine="0" />
-		</Cursor>
 	</File>
 	<File name="src\baseio.cpp" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
@@ -27,6 +19,11 @@
 	<File name="src\stdfunc.cpp" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="1169" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="include\stdfunc.h" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="827" topLine="0" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>

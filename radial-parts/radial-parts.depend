@@ -59,3 +59,25 @@
 	<stdfunc.h>
 	<baseio.h>
 
+1438568026 source:c:\users\anthony-thinkpad\documents\github\c++\radial-parts\radial-parts\parts.cpp
+	<stdfunc.h>
+	<baseio.h>
+
+1438525317 c:\users\anthony-thinkpad\documents\github\c++\radial-parts\radial-parts\include\stdfunc.h
+	<iostream>
+	<cstdlib>
+	<cstring>
+	<fstream>
+	<string>
+	<vector>
+	<windows.h>
+
+1438525317 c:\users\anthony-thinkpad\documents\github\c++\radial-parts\radial-parts\include\baseio.h
+
+1438525317 source:c:\users\anthony-thinkpad\documents\github\c++\radial-parts\radial-parts\src\baseio.cpp
+	<stdfunc.h>
+	<baseio.h>
+
+1438525317 source:c:\users\anthony-thinkpad\documents\github\c++\radial-parts\radial-parts\src\stdfunc.cpp
+	<stdfunc.h>
+
